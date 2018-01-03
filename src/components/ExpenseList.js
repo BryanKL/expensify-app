@@ -3,32 +3,24 @@ import { connect } from 'react-redux';
 import ExpenseListItem from './ExpenseListItem';
 import selectExpenses from '../selectors/expenses';
 
-const ExpenseList = (props) => (
-    <div> 
-        <h1> Expense List </h1>
-        {props.expenses.map((expense) => {
-            return <ExpenseListItem key={expense.id} {...expense} />
-        })}
-    </div>
+export const ExpenseList = (props) => (
+  <div>
+    {
+      props.expenses.length === 0 ? (
+        <p>No expenses</p>
+      ) : (
+          props.expenses.map((expense) => {
+            return <ExpenseListItem key={expense.id} {...expense} />;
+          })
+        )
+    }
+  </div>
 );
 
-/////////// The below is a hoc (higher order component ) //////////////
-///// The syntax is fixed ////////////
-
-// const ConnectedExpenseList = connect((state) => {
-//     return {
-//         expenses: state.expenses,
-//     }
-// })(ExpenseList);
-
-// export default ConnectedExpenseList;
-
-///////// This is the shorthand of writing the above. ///////////////
-
 const mapStateToProps = (state) => {
-    return {
-         expenses: selectExpenses(state.expenses, state.filters)
-    };
+  return {
+    expenses: selectExpenses(state.expenses, state.filters)
+  };
 };
 
 export default connect(mapStateToProps)(ExpenseList);
