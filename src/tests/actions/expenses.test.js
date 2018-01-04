@@ -7,7 +7,8 @@ import {
   removeExpense, 
   setExpenses, 
   startSetExpenses, 
-  startRemoveExpense } from '../../actions/expenses';
+  startRemoveExpense, 
+  startEditExpense} from '../../actions/expenses';
 import expenses from '../fixtures/expenses';
 import database from '../../firebase/firebase';
 
@@ -155,4 +156,23 @@ test('should remove expense action object from firebase', (done) => {
     expect(snapshot.val()).toBeFalsy();
     done();
   })
+});
+
+test('should update expense action object from firebase', (done) => {
+  const store = createMockStore({});
+  const id = expenses[0].id;
+  const updates = {note: 'new note value'}
+
+  store.dispatch(startEditExpense(id, updates)).then(() => {
+    const actions = store.getActions();
+    expect(actions[0]).toEqual({
+      type: 'EDIT_EXPENSE',
+      id,
+      updates
+    });
+    return database.ref(`expenses/${id}`).once('value');
+  }).then((snapshot) => {
+    expect(snapshot.val().note).toBe(updates.note);
+    done();
+  });
 });
